@@ -287,7 +287,7 @@ export default function App() {
                         ? "დიდი მადლობა ქალბატონო იმპერატორო"
                         : "ეეეეხ ცხონებული"}
                   </h2>
-                  <div className="rounded-2xl overflow-hidden border-4 border-fuchsia-200 shadow-lg mb-6 sm:mb-8 w-full aspect-square max-h-64 sm:max-h-80 flex items-center justify-center bg-fuchsia-50">
+                  <div className="rounded-2xl overflow-hidden border-4 border-fuchsia-200 shadow-lg mb-6 sm:mb-8 w-full w-full h-[50vh] sm:h-[60vh] max-h-[600px] flex items-center justify-center bg-fuchsia-50">
                     <img 
                       src={!emperorDecision ? "emperor.png" : emperorDecision === 'alive' ? "alive.png" : "dead.png"} 
                       alt="Emperor" 
@@ -326,7 +326,7 @@ export default function App() {
                     {reward.media?.caption}
                   </h2>
                   
-                  <div className="rounded-2xl overflow-hidden border-4 border-fuchsia-200 shadow-lg mb-6 sm:mb-8 w-full aspect-square max-h-64 sm:max-h-80 flex items-center justify-center bg-fuchsia-50">
+                  <div className="rounded-2xl overflow-hidden border-4 border-fuchsia-200 shadow-lg mb-6 sm:mb-8 w-full w-full h-[50vh] sm:h-[60vh] max-h-[600px] flex items-center justify-center bg-fuchsia-50">
                     <img 
                       src={reward.media?.url} 
                       alt="Reward" 
