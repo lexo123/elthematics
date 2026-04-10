@@ -10,7 +10,7 @@ export const goodImages: MediaItem[] = [
   { url: "ballet.png", caption: "ნამდვილი ბალერინა ხარ!" },
   { url: "champion.png", caption: "ჩემპიონი ხარ!" },
 //  { url: "/hero.png", caption: "მათემატიკის სუპერგმირი ხარ!" },
-  { url: "queens.png", caption: "დედოფლები ხართ" },
+  { url: "queens.png", caption: "დედოფალი და პრინცი" },
   { url: "scientist.png", caption: "ნამდვილი მეცნიერი ყოფილხარ!" },
   { url: "stitch.webp", caption: "ელუ და სტიჩი" },
   { url: "teatcher.png", caption: "ელთემატიკის პროფესორი ხარ" },
