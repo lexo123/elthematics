@@ -289,7 +289,7 @@ export default function App() {
                   </h2>
                   <div className="rounded-2xl overflow-hidden border-4 border-fuchsia-200 shadow-lg mb-6 sm:mb-8 w-full aspect-square max-h-64 sm:max-h-80 flex items-center justify-center bg-fuchsia-50">
                     <img 
-                      src={!emperorDecision ? "/emperor.png" : emperorDecision === 'alive' ? "/alive.png" : "/dead.png"} 
+                      src={!emperorDecision ? "emperor.png" : emperorDecision === 'alive' ? "alive.png" : "dead.png"} 
                       alt="Emperor" 
                       className="w-full h-full object-contain"
                       referrerPolicy="no-referrer"
