@@ -24,6 +24,7 @@ export const badImages: MediaItem[] = [
   { url: "old.png", caption: "მათემატიკოსი კი არა ჩვეულებრივი ბებრუხანა ხარ" },
   { url: "fat.png", caption: "უბრალოდ მსუქანა ყოფილხარ" },
   { url: "badscientist.png", caption: "ბანძი მეცნიერი ყოფილხარ" },
+  { url: "phone.png", caption: "ხო ხედავ ამდენი ტიკტოკისგან თავი ტელეფონად გადაგექცა" },
 ];
 
 // გიფები (როცა ზედიზედ 9 პასუხი სწორია)
