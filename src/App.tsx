@@ -142,7 +142,7 @@ const generateGeometryQuestion = (): Question => {
       const side = Math.floor(Math.random() * 10) + 2;
       sideLengths = [side, side, side, side];
       ans = side * side;
-      questionText = "იპოვე კვადრატის ფართობი\n(ყველა გვერდი ტოლია)";
+      questionText = "იპოვე კვადრატის ფართობი";
     } else {
       const w = Math.floor(Math.random() * 10) + 3;
       let h = Math.floor(Math.random() * 10) + 2;
@@ -177,8 +177,12 @@ const generateGeometryQuestion = (): Question => {
     points.push({x: centerX + drawW/2, y: centerY + drawH/2});
     points.push({x: centerX - drawW/2, y: centerY + drawH/2});
   } else {
+    let baseRotation = -Math.PI / 2;
+    if (isRegular && numSides === 4) {
+      baseRotation = Math.random() * Math.PI * 2;
+    }
     for (let i = 0; i < numSides; i++) {
-      const angle = (i * 2 * Math.PI) / numSides - Math.PI / 2;
+      const angle = (i * 2 * Math.PI) / numSides + baseRotation;
       let r = radius;
       let a = angle;
       if (!isRegular && type !== 'area') {
@@ -294,7 +298,7 @@ const getFailurePhrase = (input: string) => {
 };
 
 // აქ უნდა ჩასვათ Google Apps Script-ის ლინკი
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzd1nX-A3L7bv4VmEXVqhYLddQT1nuriiXJt4lKA_m1VIQ8s0nhdJOOWoCIvdXVyq77/exec"; 
+const GOOGLE_SCRIPT_URL = ""; 
 
 export default function App() {
   const [gameMode, setGameMode] = useState<GameMode>('menu');
@@ -322,6 +326,22 @@ export default function App() {
   const [emperorDecision, setEmperorDecision] = useState<'alive' | 'dead' | null>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
+  const statsRef = useRef({ mode: gameMode, total: completedQuestions, correct: correctFirstTry });
+
+  useEffect(() => {
+    statsRef.current = { mode: gameMode, total: completedQuestions, correct: correctFirstTry };
+  }, [gameMode, completedQuestions, correctFirstTry]);
+
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      const { mode, total, correct } = statsRef.current;
+      if (total > 0) {
+        sendStatsToGoogle(mode, total, correct);
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, []);
 
   const sendStatsToGoogle = (mode: string, total: number, correct: number) => {
     if (!GOOGLE_SCRIPT_URL) return;
@@ -341,6 +361,7 @@ export default function App() {
     fetch(GOOGLE_SCRIPT_URL, {
       method: 'POST',
       mode: 'no-cors',
+      keepalive: true,
       headers: {
         'Content-Type': 'text/plain',
       },
@@ -353,6 +374,8 @@ export default function App() {
       sendStatsToGoogle(gameMode, completedQuestions, correctFirstTry);
     }
     setGameMode('menu');
+    setCompletedQuestions(0);
+    setCorrectFirstTry(0);
   };
 
   useEffect(() => {
