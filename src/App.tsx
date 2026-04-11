@@ -298,7 +298,7 @@ const getFailurePhrase = (input: string) => {
 };
 
 // აქ უნდა ჩასვათ Google Apps Script-ის ლინკი
-const GOOGLE_SCRIPT_URL = ""; 
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzd1nX-A3L7bv4VmEXVqhYLddQT1nuriiXJt4lKA_m1VIQ8s0nhdJOOWoCIvdXVyq77/exec"; 
 
 export default function App() {
   const [gameMode, setGameMode] = useState<GameMode>('menu');
