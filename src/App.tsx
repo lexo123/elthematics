@@ -327,20 +327,41 @@ export default function App() {
 
   const inputRef = useRef<HTMLInputElement>(null);
   const statsRef = useRef({ mode: gameMode, total: completedQuestions, correct: correctFirstTry });
+  const lastSentRef = useRef({ total: 0, correct: 0 });
 
   useEffect(() => {
     statsRef.current = { mode: gameMode, total: completedQuestions, correct: correctFirstTry };
   }, [gameMode, completedQuestions, correctFirstTry]);
 
   useEffect(() => {
-    const handleBeforeUnload = () => {
+    const sendCurrentStats = () => {
       const { mode, total, correct } = statsRef.current;
-      if (total > 0) {
-        sendStatsToGoogle(mode, total, correct);
+      const diffTotal = total - lastSentRef.current.total;
+      const diffCorrect = correct - lastSentRef.current.correct;
+      
+      if (diffTotal > 0 && mode !== 'menu') {
+        sendStatsToGoogle(mode, diffTotal, diffCorrect);
+        lastSentRef.current = { total, correct };
       }
     };
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        sendCurrentStats();
+      }
+    };
+
+    const handlePageHide = () => {
+      sendCurrentStats();
+    };
+
+    window.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('pagehide', handlePageHide);
+    
+    return () => {
+      window.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('pagehide', handlePageHide);
+    };
   }, []);
 
   const sendStatsToGoogle = (mode: string, total: number, correct: number) => {
@@ -358,24 +379,35 @@ export default function App() {
       correct: correct
     };
 
-    fetch(GOOGLE_SCRIPT_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      keepalive: true,
-      headers: {
-        'Content-Type': 'text/plain',
-      },
-      body: JSON.stringify(data)
-    }).catch(err => console.error("Error sending stats:", err));
+    const blob = new Blob([JSON.stringify(data)], { type: 'text/plain' });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon(GOOGLE_SCRIPT_URL, blob);
+    } else {
+      fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        keepalive: true,
+        headers: {
+          'Content-Type': 'text/plain',
+        },
+        body: JSON.stringify(data)
+      }).catch(err => console.error("Error sending stats:", err));
+    }
   };
 
   const handleBackToMenu = () => {
-    if (completedQuestions > 0) {
-      sendStatsToGoogle(gameMode, completedQuestions, correctFirstTry);
+    const { mode, total, correct } = statsRef.current;
+    const diffTotal = total - lastSentRef.current.total;
+    const diffCorrect = correct - lastSentRef.current.correct;
+    
+    if (diffTotal > 0 && mode !== 'menu') {
+      sendStatsToGoogle(mode, diffTotal, diffCorrect);
     }
+    
     setGameMode('menu');
     setCompletedQuestions(0);
     setCorrectFirstTry(0);
+    lastSentRef.current = { total: 0, correct: 0 };
   };
 
   useEffect(() => {
@@ -424,6 +456,7 @@ export default function App() {
     setGameMode(mode);
     setCompletedQuestions(0);
     setCorrectFirstTry(0);
+    lastSentRef.current = { total: 0, correct: 0 };
     setStreak(0);
     setBatchCount(0);
     setBatchMistakes(0);
