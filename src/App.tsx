@@ -519,14 +519,18 @@ export default function App() {
     
     if (streak > 0 && streak % 9 === 0) {
       triggerConfetti();
-      if (Math.random() < 0.5) {
-        setReward({ type: 'gif', media: getRandomGif() });
-      } else {
+      const media = getRandomGif(); // ვიღებთ შემდეგს რიგიდან
+      if (media.url === "emperor.png") {
+        // თუ რიგში იმპერატორი მოვიდა, ვაჩვენებთ ინტერაქტიულ სცენას
         setReward({ type: 'emperor' });
         setEmperorDecision(null);
+      } else {
+        // თუ სხვა რამე მოვიდა, ვაჩვენებთ როგორც ჩვეულებრივ გიფს
+        setReward({ type: 'gif', media });
       }
       setBatchCount(0);
       setBatchMistakes(0);
+    }
     } else if (batchCount === 3) {
       if (batchMistakes === 0 && !mistakeOnCurrent) {
         triggerConfetti();
