@@ -25,6 +25,7 @@ export const badImages: MediaItem[] = [
   { url: "fat.png", caption: "უბრალოდ მსუქანა ყოფილხარ" },
   { url: "badscientist.png", caption: "ბანძი მეცნიერი ყოფილხარ" },
   { url: "phone.png", caption: "ხო ხედავ ამდენი ტიკტოკისგან თავი ტელეფონად გადაგექცა" },
+  { url: "monkey.png", caption: "მათემატიკური მაიმუნი ხარ" },
 ];
 
 // გიფები (როცა ზედიზედ 9 პასუხი სწორია)
