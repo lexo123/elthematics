@@ -531,7 +531,7 @@ export default function App() {
       setBatchCount(0);
       setBatchMistakes(0);
     }
-    } else if (batchCount === 3) {
+    }; else if (batchCount === 3) {
       if (batchMistakes === 0 && !mistakeOnCurrent) {
         triggerConfetti();
         setReward({ type: 'good', media: getRandomGoodImage() });
