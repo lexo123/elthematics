@@ -51,14 +51,17 @@ function createShuffledQueue<T>(items: T[]): () => T {
   return () => {
     if (queue.length === 0) {
       queue = shuffle(items);
-      // თუ ახალი სიის პირველი ელემენტი (რომელიც ბოლოშია და pop-ით ამოვა) 
-      // იგივეა რაც წინა სიის ბოლო ელემენტი, მაშინ გადავანაცვლოთ ის
       if (items.length > 1 && queue[queue.length - 1] === lastItem) {
         const first = queue.pop()!;
-        queue.unshift(first); // გადავაგდოთ სიის დასაწყისში
+        queue.unshift(first);
       }
     }
     lastItem = queue.pop()!;
     return lastItem;
   };
+}
+
+export const getRandomGoodImage = createShuffledQueue(goodImages);
+export const getRandomBadImage = createShuffledQueue(badImages);
+export const getRandomGif = createShuffledQueue(gifs);
 }
