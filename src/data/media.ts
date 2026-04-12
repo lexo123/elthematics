@@ -35,7 +35,30 @@ export const gifs: MediaItem[] = [
   { url: "hero.gif", caption: "მათემატიკის სუპერგმირი! 🎉" },
 ];
 
-// დამხმარე ფუნქციები შემთხვევითი სურათის ასარჩევად
-export const getRandomGoodImage = (): MediaItem => goodImages[Math.floor(Math.random() * goodImages.length)];
-export const getRandomBadImage = (): MediaItem => badImages[Math.floor(Math.random() * badImages.length)];
-export const getRandomGif = (): MediaItem => gifs[Math.floor(Math.random() * gifs.length)];
+function createShuffledQueue<T>(items: T[]): () => T {
+  let queue: T[] = [];
+  let lastItem: T | null = null;
+  
+  const shuffle = (array: T[]) => {
+    const newArray = [...array];
+    for (let i = newArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+  };
+
+  return () => {
+    if (queue.length === 0) {
+      queue = shuffle(items);
+      // თუ ახალი სიის პირველი ელემენტი (რომელიც ბოლოშია და pop-ით ამოვა) 
+      // იგივეა რაც წინა სიის ბოლო ელემენტი, მაშინ გადავანაცვლოთ ის
+      if (items.length > 1 && queue[queue.length - 1] === lastItem) {
+        const first = queue.pop()!;
+        queue.unshift(first); // გადავაგდოთ სიის დასაწყისში
+      }
+    }
+    lastItem = queue.pop()!;
+    return lastItem;
+  };
+}
