@@ -64,4 +64,3 @@ function createShuffledQueue<T>(items: T[]): () => T {
 export const getRandomGoodImage = createShuffledQueue(goodImages);
 export const getRandomBadImage = createShuffledQueue(badImages);
 export const getRandomGif = createShuffledQueue(gifs);
-}
