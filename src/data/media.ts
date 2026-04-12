@@ -33,6 +33,7 @@ export const gifs: MediaItem[] = [
   { url: "zeus.gif", caption: "მათემატიკის ზევსი ხარ! 🎉" },
   { url: "tiger.gif", caption: "ვეფხვების მომთვინიერებელი ხარ! 🎉" },
   { url: "hero.gif", caption: "მათემატიკის სუპერგმირი! 🎉" },
+  { url: "emperor.png", caption: "იმპერატორი" }, // დავამატეთ აქ
 ];
 
 function createShuffledQueue<T>(items: T[]): () => T {
