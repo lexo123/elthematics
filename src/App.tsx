@@ -297,6 +297,12 @@ const getFailurePhrase = (input: string) => {
   return phrases[Math.floor(Math.random() * phrases.length)];
 };
 
+const MODE_NAMES: Record<string, string> = {
+  'elthematics': 'ელთემატიკა',
+  'multiplication': 'ელმრავლების ტაბულა',
+  'elometria': 'ელომეტრია'
+};
+
 // აქ უნდა ჩასვათ Google Apps Script-ის ლინკი
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzd1nX-A3L7bv4VmEXVqhYLddQT1nuriiXJt4lKA_m1VIQ8s0nhdJOOWoCIvdXVyq77/exec"; 
 
@@ -374,14 +380,8 @@ export default function App() {
   const sendStatsToGoogle = (mode: string, total: number, correct: number) => {
     if (!GOOGLE_SCRIPT_URL) return;
     
-    const modeNames = {
-      'elthematics': 'ელთემატიკა',
-      'multiplication': 'ელმრავლების ტაბულა',
-      'elometria': 'ელომეტრია'
-    };
-    
     const data = {
-      mode: modeNames[mode as keyof typeof modeNames] || mode,
+      mode: MODE_NAMES[mode] || mode,
       total: total,
       correct: correct
     };
@@ -577,19 +577,11 @@ export default function App() {
     
     setIsSubmittingSuggestion(true);
     
-    const modeNames = {
-      'elthematics': 'ელთემატიკა',
-      'multiplication': 'ელმრავლების ტაბულა',
-      'elometria': 'ელომეტრია'
-    };
-
     const data = {
-      mode: "სურვილი",
-      suggestion: text,
-      gameMode: modeNames[gameMode as keyof typeof modeNames] || gameMode,
+      mode: MODE_NAMES[gameMode] || gameMode,
       total: 40,
       correct: reachedCount,
-      type: 'suggestion'
+      suggestion: text
     };
 
     const blob = new Blob([JSON.stringify(data)], { type: 'text/plain' });
