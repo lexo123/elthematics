@@ -304,7 +304,7 @@ const MODE_NAMES: Record<string, string> = {
 };
 
 // აქ უნდა ჩასვათ Google Apps Script-ის ლინკი
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzd1nX-A3L7bv4VmEXVqhYLddQT1nuriiXJt4lKA_m1VIQ8s0nhdJOOWoCIvdXVyq77/exec"; 
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbySuRHEO4ElbwowEl07Tkq0rCqEALiTyEQUJx5mu7vN8FkU_CObP-0JggAoTojJTwte/exec"; 
 
 export default function App() {
   const [gameMode, setGameMode] = useState<GameMode>('menu');
