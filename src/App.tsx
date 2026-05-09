@@ -576,13 +576,20 @@ export default function App() {
     if (!GOOGLE_SCRIPT_URL || !text.trim()) return;
     
     setIsSubmittingSuggestion(true);
+    
+    const modeNames = {
+      'elthematics': 'ელთემატიკა',
+      'multiplication': 'ელმრავლების ტაბულა',
+      'elometria': 'ელომეტრია'
+    };
+
     const data = {
-      type: 'suggestion',
+      mode: "სურვილი",
       suggestion: text,
-      stats: {
-        mode: gameMode,
-        reachedCount: reachedCount
-      }
+      gameMode: modeNames[gameMode as keyof typeof modeNames] || gameMode,
+      total: 40,
+      correct: reachedCount,
+      type: 'suggestion'
     };
 
     const blob = new Blob([JSON.stringify(data)], { type: 'text/plain' });
@@ -597,6 +604,9 @@ export default function App() {
         method: 'POST',
         mode: 'no-cors',
         keepalive: true,
+        headers: {
+          'Content-Type': 'text/plain',
+        },
         body: JSON.stringify(data)
       })
       .then(() => {
