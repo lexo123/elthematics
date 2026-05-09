@@ -24,7 +24,7 @@ interface Question {
   geometryData?: GeometryData;
 }
 
-// მათემატიკური კითხვის გენერატორი
+// მათემატიკური კითხვის გენერატორი (9 წლის ბავშვისთვის, 100-ის ფარგლებში)
 const generateMathQuestion = (): Question => {
   const types = ['+', '-', '*', '/', '3-num'];
   const type = types[Math.floor(Math.random() * types.length)];
@@ -55,24 +55,24 @@ const generateMathQuestion = (): Question => {
     }
     expression = [{num: a}, {op: op1, num: b}, {op: op2, num: c}];
   } else if (type === '+') {
-    ans = Math.floor(Math.random() * 81) + 20; 
-    let a = Math.floor(Math.random() * (ans - 10)) + 5; 
+    ans = Math.floor(Math.random() * 81) + 20; // 20 დან 100 მდე
+    let a = Math.floor(Math.random() * (ans - 10)) + 5; // 5 დან ans-5 მდე
     let b = ans - a;
     expression = [{num: a}, {op: '+', num: b}];
   } else if (type === '-') {
-    let a = Math.floor(Math.random() * 81) + 20;
-    let b = Math.floor(Math.random() * (a - 5)) + 5;
+    let a = Math.floor(Math.random() * 81) + 20; // 20 დან 100 მდე
+    let b = Math.floor(Math.random() * (a - 5)) + 5; // 5 დან a-5 მდე
     ans = a - b;
     expression = [{num: a}, {op: '-', num: b}];
   } else if (type === '*') {
-    let a = Math.floor(Math.random() * 9) + 2;
+    let a = Math.floor(Math.random() * 9) + 2; // 2 დან 10 მდე
     let b = Math.floor(Math.random() * 9) + 2;
     ans = a * b;
     expression = [{num: a}, {op: '*', num: b}];
   } else if (type === '/') {
-    let b = Math.floor(Math.random() * 9) + 2;
-    ans = Math.floor(Math.random() * 9) + 2;
-    let a = b * ans;
+    let b = Math.floor(Math.random() * 9) + 2; // 2 დან 10 მდე
+    ans = Math.floor(Math.random() * 9) + 2; // 2 დან 10 მდე
+    let a = b * ans; // უნაშთო გაყოფა, მაქსიმუმ 100
     expression = [{num: a}, {op: '/', num: b}];
   }
   
@@ -88,20 +88,21 @@ const generateMathQuestion = (): Question => {
   return { expression, ans, missingIndex, correctInput };
 };
 
+// გამრავლების ტაბულის გენერატორი (1-დან 10-მდე)
 const generateMultiplicationQuestion = (): Question => {
   const isMultiplication = Math.random() > 0.5;
   let expression: { num: number, op?: string }[] = [];
   let ans = 0;
 
   if (isMultiplication) {
-    let a = Math.floor(Math.random() * 10) + 1;
-    let b = Math.floor(Math.random() * 10) + 1;
+    let a = Math.floor(Math.random() * 10) + 1; // 1 დან 10 მდე
+    let b = Math.floor(Math.random() * 10) + 1; // 1 დან 10 მდე
     ans = a * b;
     expression = [{num: a}, {op: '*', num: b}];
   } else {
-    let b = Math.floor(Math.random() * 10) + 1;
-    ans = Math.floor(Math.random() * 10) + 1;
-    let a = b * ans;
+    let b = Math.floor(Math.random() * 10) + 1; // 1 დან 10 მდე
+    ans = Math.floor(Math.random() * 10) + 1; // 1 დან 10 მდე
+    let a = b * ans; // უნაშთო გაყოფა
     expression = [{num: a}, {op: '/', num: b}];
   }
 
@@ -119,7 +120,7 @@ const generateGeometryQuestion = (): Question => {
   let sideLengths: number[] = [];
 
   if (type === 'perimeter') {
-    numSides = Math.floor(Math.random() * 4) + 3;
+    numSides = Math.floor(Math.random() * 4) + 3; // 3 to 6
     isRegular = Math.random() > 0.5;
     
     if (isRegular) {
@@ -136,7 +137,7 @@ const generateGeometryQuestion = (): Question => {
     }
   } else if (type === 'area') {
     numSides = 4;
-    isRegular = Math.random() > 0.5;
+    isRegular = Math.random() > 0.5; // true -> square, false -> rectangle
     if (isRegular) {
       const side = Math.floor(Math.random() * 10) + 2;
       sideLengths = [side, side, side, side];
@@ -151,7 +152,7 @@ const generateGeometryQuestion = (): Question => {
       questionText = "იპოვე მართკუთხედის ფართობი";
     }
   } else if (type === 'count') {
-    numSides = Math.floor(Math.random() * 6) + 5;
+    numSides = Math.floor(Math.random() * 6) + 5; // 5 to 10
     isRegular = Math.random() > 0.5;
     sideLengths = Array(numSides).fill(0);
     ans = numSides;
@@ -177,6 +178,9 @@ const generateGeometryQuestion = (): Question => {
     points.push({x: centerX - drawW/2, y: centerY + drawH/2});
   } else {
     let baseRotation = -Math.PI / 2;
+    if (isRegular && numSides === 4) {
+      baseRotation = Math.random() * Math.PI * 2;
+    }
     for (let i = 0; i < numSides; i++) {
       const angle = (i * 2 * Math.PI) / numSides + baseRotation;
       let r = radius;
@@ -212,16 +216,20 @@ const generateGeometryQuestion = (): Question => {
 
 const GeometryView = ({ data }: { data: GeometryData }) => {
   const { points, sideLengths, type, isRegular } = data;
+  
   const polygonPoints = points.map(p => `${p.x},${p.y}`).join(' ');
+
   const labels = points.map((p1, i) => {
     const p2 = points[(i + 1) % points.length];
     const midX = (p1.x + p2.x) / 2;
     const midY = (p1.y + p2.y) / 2;
+    
     const dx = midX - 120;
     const dy = midY - 120;
     const dist = Math.sqrt(dx*dx + dy*dy);
     const nx = dx / dist;
     const ny = dy / dist;
+    
     return {
       x: midX + nx * 25,
       y: midY + ny * 25,
@@ -235,33 +243,72 @@ const GeometryView = ({ data }: { data: GeometryData }) => {
         {data.questionText}
       </h2>
       <svg width="240" height="240" className="overflow-visible">
-        <polygon points={polygonPoints} fill="#fdf4ff" stroke="#d946ef" strokeWidth="4" strokeLinejoin="round" />
+        <polygon 
+          points={polygonPoints} 
+          fill="#fdf4ff" 
+          stroke="#d946ef" 
+          strokeWidth="4" 
+          strokeLinejoin="round"
+        />
         {type !== 'count' && labels.map((label, i) => {
           if (isRegular && i !== 0) return null;
           if (type === 'area' && !isRegular && (i === 2 || i === 3)) return null;
-          return <text key={i} x={label.x} y={label.y} fill="#a21caf" fontSize="22" fontWeight="bold" textAnchor="middle" dominantBaseline="middle">{label.val}</text>;
+
+          return (
+            <text 
+              key={i} 
+              x={label.x} 
+              y={label.y} 
+              fill="#a21caf" 
+              fontSize="22" 
+              fontWeight="bold" 
+              textAnchor="middle" 
+              dominantBaseline="middle"
+            >
+              {label.val}
+            </text>
+          );
         })}
       </svg>
     </div>
   );
 };
 
-const successPhrases = ["ყოჩაღ, ელენე! 💖", "გენიოსი ხარ! 🌟", "მალადეც ელენე! 🎉", "მათემატიკოსი ქალი ხარ! 👩‍🏫", "შენ აღარ ხუმრობ! 😎", "შეენ ლევანიზე მეტი მათემატიკა გცოდნია! 🤫", "ნამდვილი ელთემატიკოსი ხარ! ✨", "საააღოლ! 👏"];
+const successPhrases = [
+  "ყოჩაღ, ელენე! 💖",
+  "გენიოსი ხარ! 🌟",
+  "მალადეც ელენე! 🎉",
+  "მათემატიკოსი ქალი ხარ! 👩‍🏫",
+  "შენ აღარ ხუმრობ! 😎",
+  "შეენ ლევანიზე მეტი მათემატიკა გცოდნია! 🤫",
+  "ნამდვილი ელთემატიკოსი ხარ! ✨",
+  "საააღოლ! 👏"
+];
 
 const getFailurePhrase = (input: string) => {
-  const phrases = ["წესიერად დაითვალე, გოგო! 🤨", "ამხელა ქალს ეგ უნდა გეშლებოდეს? 🤦‍♀️", `რა ${input}, გოგო, თავიდან გამოთვალე. 🙄`, `${input} არა იიის 🤣`, `${input} კი არა თუ გაგცხე ეხლა 😠`, `${input}-ს მოგცემ მე შენ 😤` ];
+  const phrases = [
+    "წესიერად დაითვალე, გოგო! 🤨",
+    "ამხელა ქალს ეგ უნდა გეშლებოდეს? 🤦‍♀️",
+    `რა ${input}, გოგო, თავიდან გამოთვალე. 🙄`,
+    `${input} არა იიის 🤣`,
+    `${input} კი არა თუ გაგცხე ეხლა 😠`,
+    `${input}-ს მოგცემ მე შენ 😤`
+  ];
   return phrases[Math.floor(Math.random() * phrases.length)];
 };
 
+// აქ უნდა ჩასვათ Google Apps Script-ის ლინკი
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzd1nX-A3L7bv4VmEXVqhYLddQT1nuriiXJt4lKA_m1VIQ8s0nhdJOOWoCIvdXVyq77/exec"; 
 
 export default function App() {
   const [gameMode, setGameMode] = useState<GameMode>('menu');
+  
   const [question, setQuestion] = useState<Question>({ expression: [], ans: 0, missingIndex: -1, correctInput: 0 });
   const [userInput, setUserInput] = useState('');
   const [message, setMessage] = useState('');
   const [isError, setIsError] = useState(false);
 
+  // თამაშის სტატისტიკა
   const [completedQuestions, setCompletedQuestions] = useState(0); 
   const [correctFirstTry, setCorrectFirstTry] = useState(0); 
   const [streak, setStreak] = useState(0); 
@@ -270,18 +317,20 @@ export default function App() {
   const [mistakeOnCurrent, setMistakeOnCurrent] = useState(false); 
   const [isCorrectAnswered, setIsCorrectAnswered] = useState(false); 
 
-  const [timeLeft, setTimeLeft] = useState<number>(10);
-  const [isTimeUp, setIsTimeUp] = useState(false);
-
-  const [reward, setReward] = useState<{ type: 'good' | 'bad' | 'gif' | 'emperor', media?: MediaItem } | null>(null);
-  const [emperorDecision, setEmperorDecision] = useState<'alive' | 'dead' | null>(null);
-
-  // ახალი ფუნქციისთვის საჭირო სტეიტები
+  // ბოლო 40 პასუხის ისტორია (rolling window)
   const [recentAnswers, setRecentAnswers] = useState<boolean[]>([]);
   const [showSuggestionModal, setShowSuggestionModal] = useState(false);
   const [suggestion, setSuggestion] = useState('');
   const [reachedCount, setReachedCount] = useState(0);
   const [isSubmittingSuggestion, setIsSubmittingSuggestion] = useState(false);
+
+  // ტაიმერი გამრავლების ტაბულისთვის
+  const [timeLeft, setTimeLeft] = useState<number>(10);
+  const [isTimeUp, setIsTimeUp] = useState(false);
+
+  // ჯილდოს სტეიტი
+  const [reward, setReward] = useState<{ type: 'good' | 'bad' | 'gif' | 'emperor', media?: MediaItem } | null>(null);
+  const [emperorDecision, setEmperorDecision] = useState<'alive' | 'dead' | null>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const statsRef = useRef({ mode: gameMode, total: completedQuestions, correct: correctFirstTry });
@@ -296,50 +345,72 @@ export default function App() {
       const { mode, total, correct } = statsRef.current;
       const diffTotal = total - lastSentRef.current.total;
       const diffCorrect = correct - lastSentRef.current.correct;
+      
       if (diffTotal > 0 && mode !== 'menu') {
         sendStatsToGoogle(mode, diffTotal, diffCorrect);
         lastSentRef.current = { total, correct };
       }
     };
-    window.addEventListener('visibilitychange', () => document.visibilityState === 'hidden' && sendCurrentStats());
-    window.addEventListener('pagehide', sendCurrentStats);
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        sendCurrentStats();
+      }
+    };
+
+    const handlePageHide = () => {
+      sendCurrentStats();
+    };
+
+    window.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('pagehide', handlePageHide);
+    
     return () => {
-      window.removeEventListener('visibilitychange', sendCurrentStats);
-      window.removeEventListener('pagehide', sendCurrentStats);
+      window.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('pagehide', handlePageHide);
     };
   }, []);
 
   const sendStatsToGoogle = (mode: string, total: number, correct: number) => {
     if (!GOOGLE_SCRIPT_URL) return;
-    const modeNames = { 'elthematics': 'ელთემატიკა', 'multiplication': 'ელმრავლების ტაბულა', 'elometria': 'ელომეტრია' };
-    const data = { mode: modeNames[mode as keyof typeof modeNames] || mode, total, correct };
-    const blob = new Blob([JSON.stringify(data)], { type: 'text/plain' });
-    if (navigator.sendBeacon) navigator.sendBeacon(GOOGLE_SCRIPT_URL, blob);
-    else fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', keepalive: true, body: JSON.stringify(data) }).catch(err => console.error(err));
-  };
+    
+    const modeNames = {
+      'elthematics': 'ელთემატიკა',
+      'multiplication': 'ელმრავლების ტაბულა',
+      'elometria': 'ელომეტრია'
+    };
+    
+    const data = {
+      mode: modeNames[mode as keyof typeof modeNames] || mode,
+      total: total,
+      correct: correct
+    };
 
-  const sendSuggestionToGoogle = (text: string) => {
-    if (!GOOGLE_SCRIPT_URL || !text.trim()) return;
-    setIsSubmittingSuggestion(true);
-    const data = { type: 'suggestion', suggestion: text, stats: { mode: gameMode, reachedCount } };
-    fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', keepalive: true, body: JSON.stringify(data) })
-      .then(() => {
-        setIsSubmittingSuggestion(false);
-        setShowSuggestionModal(false);
-        setSuggestion('');
-        generateNextQuestion();
-      }).catch(() => {
-        setIsSubmittingSuggestion(false);
-        setShowSuggestionModal(false);
-        generateNextQuestion();
-      });
+    const blob = new Blob([JSON.stringify(data)], { type: 'text/plain' });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon(GOOGLE_SCRIPT_URL, blob);
+    } else {
+      fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        keepalive: true,
+        headers: {
+          'Content-Type': 'text/plain',
+        },
+        body: JSON.stringify(data)
+      }).catch(err => console.error("Error sending stats:", err));
+    }
   };
 
   const handleBackToMenu = () => {
     const { mode, total, correct } = statsRef.current;
     const diffTotal = total - lastSentRef.current.total;
     const diffCorrect = correct - lastSentRef.current.correct;
-    if (diffTotal > 0 && mode !== 'menu') sendStatsToGoogle(mode, diffTotal, diffCorrect);
+    
+    if (diffTotal > 0 && mode !== 'menu') {
+      sendStatsToGoogle(mode, diffTotal, diffCorrect);
+    }
+    
     setGameMode('menu');
     setCompletedQuestions(0);
     setCorrectFirstTry(0);
@@ -348,11 +419,28 @@ export default function App() {
   };
 
   useEffect(() => {
-    if (gameMode !== 'menu' && !reward && !isCorrectAnswered) inputRef.current?.focus();
+    if (gameMode !== 'menu' && !reward && !isCorrectAnswered) {
+      inputRef.current?.focus();
+    }
   }, [reward, question, isCorrectAnswered, gameMode]);
 
   useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter' && reward) {
+        if (reward.type === 'emperor' && !emperorDecision) {
+          return;
+        }
+        handleNextAfterReward();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [reward, emperorDecision]);
+
+  // ტაიმერის ლოგიკა
+  useEffect(() => {
     if (gameMode !== 'multiplication' || reward || isCorrectAnswered) return;
+
     if (timeLeft > 0) {
       const timerId = setTimeout(() => setTimeLeft(prev => prev - 1), 1000);
       return () => clearTimeout(timerId);
@@ -362,14 +450,13 @@ export default function App() {
         setMistakeOnCurrent(true);
         setBatchMistakes(prev => prev + 1);
         setStreak(0);
-        setRecentAnswers(prev => {
-          const next = [...prev, false];
-          return next.length > 40 ? next.slice(1) : next;
-        });
       }
       setIsError(true);
       setMessage('დრო ამოიწურა! ⏰ სცადე ხელახლა.');
       setUserInput('');
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
     }
   }, [timeLeft, gameMode, reward, isCorrectAnswered, isTimeUp, mistakeOnCurrent]);
 
@@ -377,59 +464,85 @@ export default function App() {
     setGameMode(mode);
     setCompletedQuestions(0);
     setCorrectFirstTry(0);
+    lastSentRef.current = { total: 0, correct: 0 };
     setStreak(0);
     setBatchCount(0);
     setBatchMistakes(0);
     setMistakeOnCurrent(false);
     setIsCorrectAnswered(false);
-    setRecentAnswers([]);
-    if (mode === 'multiplication') { setQuestion(generateMultiplicationQuestion()); setTimeLeft(10); setIsTimeUp(false); }
-    else if (mode === 'elometria') setQuestion(generateGeometryQuestion());
-    else setQuestion(generateMathQuestion());
+    setReward(null);
+    setEmperorDecision(null);
+    
+    if (mode === 'multiplication') {
+      setQuestion(generateMultiplicationQuestion());
+      setTimeLeft(10);
+      setIsTimeUp(false);
+    } else if (mode === 'elometria') {
+      setQuestion(generateGeometryQuestion());
+    } else if (mode === 'elthematics') {
+      setQuestion(generateMathQuestion());
+    }
   };
 
   const checkAnswer = () => {
     if (!userInput.trim()) return;
+
     const parsedInput = parseInt(userInput, 10);
+
     if (parsedInput === question.correctInput) {
-      const isCorrectOnFirst = !mistakeOnCurrent;
+      // სწორი პასუხი!
+      const isCorrectOnFirstMatch = !mistakeOnCurrent;
+      
+      // ვაახლებთ ბოლო 40 პასუხის ისტორიას
       setRecentAnswers(prev => {
-        const next = [...prev, isCorrectOnFirst];
-        return next.length > 40 ? next.slice(1) : next;
+        const next = [...prev, isCorrectOnFirstMatch];
+        const limited = next.length > 40 ? next.slice(1) : next;
+        console.log("Recent Answers Window:", limited.map(v => v ? 'S' : 'F').join(''));
+        return limited;
       });
-      setMessage(successPhrases[Math.floor(Math.random() * successPhrases.length)]);
+
+      const randomPhrase = successPhrases[Math.floor(Math.random() * successPhrases.length)];
+      setMessage(randomPhrase);
       setIsError(false);
       setIsCorrectAnswered(true);
+      
       setCompletedQuestions(prev => prev + 1);
-      if (isCorrectOnFirst) setCorrectFirstTry(prev => prev + 1);
-      setBatchCount(prev => prev + 1);
-      setStreak(prev => isCorrectOnFirst ? prev + 1 : 0);
-    } else {
       if (!mistakeOnCurrent) {
-        setRecentAnswers(prev => {
-          const next = [...prev, false];
-          return next.length > 40 ? next.slice(1) : next;
-        });
-        setMistakeOnCurrent(true);
-        setBatchMistakes(prev => prev + 1);
-        setStreak(0);
+        setCorrectFirstTry(prev => prev + 1);
       }
+      
+      setBatchCount(prev => prev + 1);
+      setStreak(prev => !mistakeOnCurrent ? prev + 1 : 0);
+    } else {
+      // არასწორი პასუხი
       setMessage(getFailurePhrase(userInput));
       setIsError(true);
       setUserInput('');
+      
+      if (!mistakeOnCurrent) {
+        setMistakeOnCurrent(true);
+        setBatchMistakes(prev => prev + 1);
+        setStreak(0); // სტრიკი ნულდება
+      }
+      
+      // ვაბრუნებთ ფოკუსს ინფუთზე
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
     }
   };
 
   const handleNextQuestion = () => {
     setIsCorrectAnswered(false);
     
-    // 40-იანი ფანჯრის შემოწმება
+    // ვამოწმებთ 40-იან ფანჯარას ( Achievement Check )
     if (recentAnswers.length === 40) {
       const correctCount = recentAnswers.filter(a => a).length;
+      console.log("Achievement Check - Correct in last 40:", correctCount);
       if (correctCount >= 39) {
         setReachedCount(correctCount);
         setShowSuggestionModal(true);
-        setRecentAnswers([]); 
+        setRecentAnswers([]); // ვასუფთავებთ რიგს, რომ თავიდან დაიწყოს ათვლა
         return; 
       }
     }
@@ -437,13 +550,21 @@ export default function App() {
     if (streak > 0 && streak % 9 === 0) {
       triggerConfetti();
       const media = getRandomGif();
-      if (media.url === "emperor.png") { setReward({ type: 'emperor' }); setEmperorDecision(null); }
-      else setReward({ type: 'gif', media });
+      if (media.url === "emperor.png") {
+        setReward({ type: 'emperor' });
+        setEmperorDecision(null);
+      } else {
+        setReward({ type: 'gif', media });
+      }
       setBatchCount(0);
       setBatchMistakes(0);
     } else if (batchCount === 3) {
-      if (batchMistakes === 0 && !mistakeOnCurrent) { triggerConfetti(); setReward({ type: 'good', media: getRandomGoodImage() }); }
-      else setReward({ type: 'bad', media: getRandomBadImage() });
+      if (batchMistakes === 0 && !mistakeOnCurrent) {
+        triggerConfetti();
+        setReward({ type: 'good', media: getRandomGoodImage() });
+      } else {
+        setReward({ type: 'bad', media: getRandomBadImage() });
+      }
       setBatchCount(0);
       setBatchMistakes(0);
     } else {
@@ -451,29 +572,132 @@ export default function App() {
     }
   };
 
-  const generateNextQuestion = () => {
-    if (gameMode === 'multiplication') { setQuestion(generateMultiplicationQuestion()); setTimeLeft(10); setIsTimeUp(false); }
-    else if (gameMode === 'elometria') setQuestion(generateGeometryQuestion());
-    else setQuestion(generateMathQuestion());
-    setUserInput(''); setMessage(''); setIsError(false); setMistakeOnCurrent(false); setIsCorrectAnswered(false);
+  const sendSuggestionToGoogle = (text: string) => {
+    if (!GOOGLE_SCRIPT_URL || !text.trim()) return;
+    
+    setIsSubmittingSuggestion(true);
+    const data = {
+      type: 'suggestion',
+      suggestion: text,
+      stats: {
+        mode: gameMode,
+        reachedCount: reachedCount
+      }
+    };
+
+    const blob = new Blob([JSON.stringify(data)], { type: 'text/plain' });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon(GOOGLE_SCRIPT_URL, blob);
+      setIsSubmittingSuggestion(false);
+      setShowSuggestionModal(false);
+      setSuggestion('');
+      generateNextQuestion();
+    } else {
+      fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        keepalive: true,
+        body: JSON.stringify(data)
+      })
+      .then(() => {
+        setIsSubmittingSuggestion(false);
+        setShowSuggestionModal(false);
+        setSuggestion('');
+        generateNextQuestion();
+      })
+      .catch(err => {
+        console.error("Error sending suggestion:", err);
+        setIsSubmittingSuggestion(false);
+        setShowSuggestionModal(false);
+        setSuggestion('');
+        generateNextQuestion();
+      });
+    }
   };
 
-  const triggerConfetti = () => confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#f472b6', '#c084fc', '#fbbf24', '#38bdf8'] });
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isCorrectAnswered) {
+      handleNextQuestion();
+    } else {
+      checkAnswer();
+    }
+  };
 
-  const getOperatorSymbol = (op: string) => op === '*' ? '×' : (op === '/' ? '÷' : op);
+  const generateNextQuestion = () => {
+    if (gameMode === 'multiplication') {
+      setQuestion(generateMultiplicationQuestion());
+      setTimeLeft(10);
+      setIsTimeUp(false);
+    } else if (gameMode === 'elometria') {
+      setQuestion(generateGeometryQuestion());
+    } else {
+      setQuestion(generateMathQuestion());
+    }
+    setUserInput('');
+    setMessage('');
+    setIsError(false);
+    setMistakeOnCurrent(false);
+    setIsCorrectAnswered(false);
+  };
+
+  const handleNextAfterReward = () => {
+    setReward(null);
+    setEmperorDecision(null);
+    generateNextQuestion();
+  };
+
+  const triggerConfetti = () => {
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#f472b6', '#c084fc', '#fbbf24', '#38bdf8']
+    });
+  };
+
+  const getOperatorSymbol = (op: string) => {
+    if (op === '*') return '×';
+    if (op === '/') return '÷';
+    return op;
+  };
 
   if (gameMode === 'menu') {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center py-10 px-4 bg-gradient-to-b from-fuchsia-50 to-purple-50">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md flex flex-col items-center">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-w-md flex flex-col items-center"
+        >
           <div className="mb-12 text-center">
-            <h1 className="text-5xl sm:text-6xl font-black text-fuchsia-600 flex items-center justify-center gap-3 drop-shadow-sm mb-4"><Sparkles className="text-yellow-400 w-10 h-10" />ელთემატიკა<Sparkles className="text-yellow-400 w-10 h-10" /></h1>
+            <h1 className="text-5xl sm:text-6xl font-black text-fuchsia-600 flex items-center justify-center gap-3 drop-shadow-sm mb-4">
+              <Sparkles className="text-yellow-400 w-10 h-10" />
+              ელთემატიკა
+              <Sparkles className="text-yellow-400 w-10 h-10" />
+            </h1>
             <p className="text-xl text-fuchsia-800 font-medium">აირჩიე თამაში</p>
           </div>
+
           <div className="flex flex-col gap-5 w-full">
-            <button onClick={() => startGame('elthematics')} className="bg-gradient-to-r from-fuchsia-500 to-purple-500 text-white text-2xl font-bold py-6 px-8 rounded-3xl shadow-xl hover:scale-[1.02] active:scale-95 transition-all">✨ ელთემატიკა</button>
-            <button onClick={() => startGame('multiplication')} className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-2xl font-bold py-6 px-8 rounded-3xl shadow-xl hover:scale-[1.02] active:scale-95 transition-all">✖️ ელმრავლების ტაბულა</button>
-            <button onClick={() => startGame('elometria')} className="bg-gradient-to-r from-green-500 to-emerald-500 text-white text-2xl font-bold py-6 px-8 rounded-3xl shadow-xl hover:scale-[1.02] active:scale-95 transition-all">📐 ელომეტრია</button>
+            <button 
+              onClick={() => startGame('elthematics')} 
+              className="bg-gradient-to-r from-fuchsia-500 to-purple-500 text-white text-2xl font-bold py-6 px-8 rounded-3xl shadow-xl hover:shadow-2xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-4"
+            >
+              ✨ ელთემატიკა
+            </button>
+            <button 
+              onClick={() => startGame('multiplication')} 
+              className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-2xl font-bold py-6 px-8 rounded-3xl shadow-xl hover:shadow-2xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-4"
+            >
+              ✖️ ელმრავლების ტაბულა
+            </button>
+            <button 
+              onClick={() => startGame('elometria')} 
+              className="bg-gradient-to-r from-green-500 to-emerald-500 text-white text-2xl font-bold py-6 px-8 rounded-3xl shadow-xl hover:shadow-2xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-4"
+            >
+              📐 ელომეტრია
+            </button>
           </div>
         </motion.div>
       </div>
@@ -482,65 +706,286 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col items-center py-10 px-4 relative">
-      <button onClick={handleBackToMenu} className="absolute top-4 left-4 sm:top-8 sm:left-8 p-3 bg-white rounded-full shadow-md text-fuchsia-600 z-10"><ArrowLeft className="w-6 h-6 sm:w-8" /></button>
-      <motion.div initial={{ y: -50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="text-center mb-6 mt-12 sm:mt-0">
-        <h1 className="text-4xl sm:text-5xl font-black text-fuchsia-600 flex items-center justify-center gap-3 drop-shadow-sm"><Sparkles className="text-yellow-400 w-8 h-8 sm:w-10" />{gameMode === 'multiplication' ? 'ელმრავლების ტაბულა' : gameMode === 'elometria' ? 'ელომეტრია' : 'ელთემატიკა'}<Sparkles className="text-yellow-400 w-8 h-8 sm:w-10" /></h1>
+      <button 
+        onClick={handleBackToMenu} 
+        className="absolute top-4 left-4 sm:top-8 sm:left-8 p-3 bg-white rounded-full shadow-md text-fuchsia-600 hover:bg-fuchsia-50 transition-colors z-10"
+      >
+        <ArrowLeft className="w-6 h-6 sm:w-8 sm:h-8" />
+      </button>
+
+      {/* Header */}
+      <motion.div 
+        initial={{ y: -50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        className="text-center mb-6 sm:mb-8 mt-12 sm:mt-0"
+      >
+        <h1 className="text-4xl sm:text-5xl font-black text-fuchsia-600 flex items-center justify-center gap-2 sm:gap-3 drop-shadow-sm">
+          <Sparkles className="text-yellow-400 w-8 h-8 sm:w-10 sm:h-10" />
+          {gameMode === 'multiplication' ? 'ელმრავლების ტაბულა' : gameMode === 'elometria' ? 'ელომეტრია' : 'ელთემატიკა'}
+          <Sparkles className="text-yellow-400 w-8 h-8 sm:w-10 sm:h-10" />
+        </h1>
       </motion.div>
-      <div className="w-full max-w-lg mb-6 bg-white rounded-2xl p-4 shadow-lg border-4 border-fuchsia-100 flex justify-center items-center"><span className="text-fuchsia-800 font-bold text-xl sm:text-2xl flex items-center gap-3"><Star className="text-yellow-400 fill-yellow-400 w-6 h-6 sm:w-8" />სწორი: <span className="text-fuchsia-600">{correctFirstTry}</span> / სულ: <span className="text-fuchsia-600">{completedQuestions}</span></span></div>
-      <motion.div className="bg-white p-6 sm:p-10 rounded-3xl shadow-xl border-4 border-fuchsia-100 w-full max-w-lg relative overflow-hidden" animate={isError ? { x: [-10, 10, -10, 10, 0] } : {}} transition={{ duration: 0.4 }}>
+
+      {/* Stats */}
+      <div className="w-full max-w-lg mb-6 sm:mb-8 bg-white rounded-2xl p-4 sm:p-5 shadow-lg border-4 border-fuchsia-100 flex justify-center items-center">
+        <span className="text-fuchsia-800 font-bold text-xl sm:text-2xl flex items-center gap-2 sm:gap-3">
+          <Star className="text-yellow-400 fill-yellow-400 w-6 h-6 sm:w-8 sm:h-8" />
+          სწორი: <span className="text-fuchsia-600">{correctFirstTry}</span> / სულ: <span className="text-fuchsia-600">{completedQuestions}</span>
+        </span>
+      </div>
+
+      {/* Main Card */}
+      <motion.div 
+        className="bg-white p-6 sm:p-10 rounded-3xl shadow-xl border-4 border-fuchsia-100 w-full max-w-lg relative overflow-hidden"
+        animate={isError ? { x: [-10, 10, -10, 10, 0] } : {}}
+        transition={{ duration: 0.4 }}
+      >
         <AnimatePresence mode="wait">
           {reward ? (
-            <motion.div key="reward" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }} className="flex flex-col items-center text-center w-full">
+            <motion.div 
+              key="reward"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className="flex flex-col items-center text-center w-full"
+            >
               {reward.type === 'emperor' ? (
                 <>
-                  <h2 className="text-2xl sm:text-3xl font-bold text-fuchsia-600 mb-6">{!emperorDecision ? "იმპერატორო ელენე, მოვკლათ გლადიატორი ლექსო თუ იცოცხლოს?" : emperorDecision === 'alive' ? "დიდი მადლობა ქალბატონო იმპერატორო" : "ეეეეხ ცხონებული"}</h2>
-                  <div className="rounded-2xl overflow-hidden border-4 border-fuchsia-200 shadow-lg mb-8 w-full h-[50vh] sm:h-[60vh] max-h-[600px] flex items-center justify-center bg-fuchsia-50"><img src={!emperorDecision ? "emperor.png" : emperorDecision === 'alive' ? "alive.png" : "dead.png"} alt="Emperor" className="w-full h-full object-contain" referrerPolicy="no-referrer" /></div>
-                  {!emperorDecision ? (<div className="flex gap-4 w-full justify-center"><button onClick={() => setEmperorDecision('alive')} className="bg-green-500 text-white text-lg font-bold py-3 px-6 rounded-2xl shadow-lg">👍 იცოცხლოს</button><button onClick={() => setEmperorDecision('dead')} className="bg-red-500 text-white text-lg font-bold py-3 px-6 rounded-2xl shadow-lg">👎 მოკალით</button></div>) : (<button onClick={() => { setReward(null); generateNextQuestion(); }} className="bg-gradient-to-r from-fuchsia-500 to-purple-500 text-white text-xl font-bold py-3 px-8 rounded-full shadow-lg flex items-center gap-3">გაგრძელება <ArrowRight className="w-6 h-6" /></button>)}
+                  <h2 className="text-2xl sm:text-3xl font-bold text-fuchsia-600 mb-4 sm:mb-6">
+                    {!emperorDecision 
+                      ? "იმპერატორო ელენე, მოვკლათ გლადიატორი ლექსო თუ იცოცხლოს?"
+                      : emperorDecision === 'alive'
+                        ? "დიდი მადლობა ქალბატონო იმპერატორო"
+                        : "ეეეეხ ცხონებული"}
+                  </h2>
+                  <div className="rounded-2xl overflow-hidden border-4 border-fuchsia-200 shadow-lg mb-6 sm:mb-8 w-full h-[50vh] sm:h-[60vh] max-h-[600px] flex items-center justify-center bg-fuchsia-50">
+                    <img 
+                      src={!emperorDecision ? "emperor.png" : emperorDecision === 'alive' ? "alive.png" : "dead.png"} 
+                      alt="Emperor" 
+                      className="w-full h-full object-contain"
+                      referrerPolicy="no-referrer"
+                    />
+                  </div>
+                  {!emperorDecision ? (
+                    <div className="flex gap-4 w-full justify-center">
+                      <button
+                        onClick={() => setEmperorDecision('alive')}
+                        className="bg-green-500 text-white text-lg sm:text-xl font-bold py-3 px-6 rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center gap-2"
+                      >
+                        👍 იცოცხლოს
+                      </button>
+                      <button
+                        onClick={() => setEmperorDecision('dead')}
+                        className="bg-red-500 text-white text-lg sm:text-xl font-bold py-3 px-6 rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center gap-2"
+                      >
+                        👎 მოკალით
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      autoFocus
+                      onClick={handleNextAfterReward}
+                      className="bg-gradient-to-r from-fuchsia-500 to-purple-500 text-white text-xl sm:text-2xl font-bold py-3 sm:py-4 px-8 sm:px-10 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center gap-3"
+                    >
+                      გაგრძელება <ArrowRight className="w-6 h-6 sm:w-8 h-8" />
+                    </button>
+                  )}
                 </>
               ) : (
                 <>
-                  <h2 className="text-2xl sm:text-3xl font-bold text-fuchsia-600 mb-6">{reward.media?.caption}</h2>
-                  <div className="rounded-2xl overflow-hidden border-4 border-fuchsia-200 shadow-lg mb-8 w-full h-[50vh] sm:h-[60vh] max-h-[600px] flex items-center justify-center bg-fuchsia-50"><img src={reward.media?.url} alt="Reward" className="w-full h-full object-contain" referrerPolicy="no-referrer" /></div>
-                  <button onClick={() => { setReward(null); generateNextQuestion(); }} className="bg-gradient-to-r from-fuchsia-500 to-purple-500 text-white text-xl font-bold py-3 px-8 rounded-full shadow-lg flex items-center gap-3">გაგრძელება <ArrowRight className="w-6 h-6" /></button>
+                  <h2 className="text-2xl sm:text-3xl font-bold text-fuchsia-600 mb-4 sm:mb-6">
+                    {reward.media?.caption}
+                  </h2>
+                  
+                  <div className="rounded-2xl overflow-hidden border-4 border-fuchsia-200 shadow-lg mb-6 sm:mb-8 w-full h-[50vh] sm:h-[60vh] max-h-[600px] flex items-center justify-center bg-fuchsia-50">
+                    <img 
+                      src={reward.media?.url} 
+                      alt="Reward" 
+                      className="w-full h-full object-contain"
+                      referrerPolicy="no-referrer"
+                    />
+                  </div>
+
+                  <button
+                    autoFocus
+                    onClick={handleNextAfterReward}
+                    className="bg-gradient-to-r from-fuchsia-500 to-purple-500 text-white text-xl sm:text-2xl font-bold py-3 sm:py-4 px-8 sm:px-10 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center gap-3"
+                  >
+                    გაგრძელება <ArrowRight className="w-6 h-6 sm:w-8 h-8" />
+                  </button>
                 </>
               )}
             </motion.div>
           ) : (
-            <motion.div key="question" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }}>
+            <motion.div 
+              key="question"
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -50 }}
+            >
               {gameMode === 'multiplication' && (
-                <div className="mb-6"><div className="flex justify-between items-center mb-2"><span className="font-bold text-gray-500 flex items-center gap-2"><Clock className="w-5" /> დრო</span><span className={`font-black text-xl ${timeLeft <= 3 ? 'text-red-500' : 'text-blue-500'}`}>{timeLeft} წამი</span></div><div className="w-full bg-gray-100 rounded-full h-3 overflow-hidden"><motion.div className={`h-full ${timeLeft <= 3 ? 'bg-red-500' : 'bg-blue-500'}`} initial={{ width: '100%' }} animate={{ width: `${(timeLeft / 10) * 100}%` }} transition={{ duration: 1, ease: "linear" }} /></div></div>
+                <div className="mb-6">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-bold text-gray-500 flex items-center gap-2">
+                      <Clock className="w-5 h-5" /> დრო
+                    </span>
+                    <span className={`font-black text-xl ${timeLeft <= 3 ? 'text-red-500' : 'text-blue-500'}`}>
+                      {timeLeft} წამი
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
+                    <motion.div 
+                      className={`h-full ${timeLeft <= 3 ? 'bg-red-500' : 'bg-blue-500'}`}
+                      initial={{ width: '100%' }}
+                      animate={{ width: `${(timeLeft / 10) * 100}%` }}
+                      transition={{ duration: 1, ease: "linear" }}
+                    />
+                  </div>
+                </div>
               )}
-              {question.isGeometry && question.geometryData ? <GeometryView data={question.geometryData} /> : (
-                <div className="text-center mb-8"><div className="text-5xl sm:text-7xl font-black text-slate-800 flex justify-center items-center gap-4 flex-wrap">{question.expression.map((item, idx) => (<React.Fragment key={idx}>{item.op && <span className="text-fuchsia-500">{getOperatorSymbol(item.op)}</span>}{question.missingIndex === idx ? <span className="text-fuchsia-600">X</span> : <span>{item.num}</span>}</React.Fragment>))}<span className="text-fuchsia-500">=</span>{question.missingIndex === -1 ? <span>?</span> : <span>{question.ans}</span>}</div></div>
+
+              {question.isGeometry && question.geometryData ? (
+                <GeometryView data={question.geometryData} />
+              ) : (
+                <div className="text-center mb-6 sm:mb-8">
+                  <div className="text-5xl sm:text-7xl font-black text-slate-800 tracking-wider flex justify-center items-center gap-2 sm:gap-4 flex-wrap">
+                    {question.expression.map((item, idx) => (
+                      <React.Fragment key={idx}>
+                        {item.op && <span className="text-fuchsia-500">{getOperatorSymbol(item.op)}</span>}
+                        {question.missingIndex === idx ? (
+                          <span className="text-fuchsia-600">X</span>
+                        ) : (
+                          <span>{item.num}</span>
+                        )}
+                      </React.Fragment>
+                    ))}
+                    <span className="text-fuchsia-500">=</span>
+                    {question.missingIndex === -1 ? <span>?</span> : <span>{question.ans}</span>}
+                  </div>
+                </div>
               )}
-              <form onSubmit={(e) => { e.preventDefault(); isCorrectAnswered ? handleNextQuestion() : checkAnswer(); }} className="flex flex-col items-center gap-6">
-                <input ref={inputRef} type="text" inputMode="numeric" pattern="[0-9]*" value={userInput} onChange={(e) => setUserInput(e.target.value)} placeholder={question.missingIndex === -1 ? "პასუხი..." : "X = ..."} readOnly={isCorrectAnswered} className={`w-full text-center text-4xl sm:text-5xl font-bold py-6 rounded-2xl border-4 focus:outline-none transition-colors ${isCorrectAnswered ? 'border-green-400 bg-green-50 text-green-700' : isError ? 'border-red-400 bg-red-50 text-red-600' : 'border-fuchsia-200 focus:border-fuchsia-500 bg-fuchsia-50/50 text-fuchsia-900'}`} autoFocus />
-                {message && <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className={`text-xl sm:text-2xl font-bold text-center ${isError ? 'text-red-500' : 'text-green-500'}`}>{message}</motion.div>}
-                <button type="submit" className={`w-full text-white text-2xl font-bold py-5 rounded-2xl shadow-lg hover:scale-[1.02] active:scale-95 transition-all flex justify-center items-center gap-3 ${isCorrectAnswered ? 'bg-gradient-to-r from-green-500 to-emerald-500' : 'bg-gradient-to-r from-fuchsia-500 to-purple-500'}`}>{isCorrectAnswered ? 'შემდეგ' : 'შემოწმება'}{isCorrectAnswered && <ArrowRight className="w-8 h-8" />}</button>
+
+              <form onSubmit={onSubmit} className="flex flex-col items-center gap-4 sm:gap-6">
+                <input
+                  ref={inputRef}
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  value={userInput}
+                  onChange={(e) => setUserInput(e.target.value)}
+                  placeholder={question.missingIndex === -1 ? "პასუხი..." : "X = ..."}
+                  readOnly={isCorrectAnswered}
+                  className={`w-full text-center text-4xl sm:text-5xl font-bold py-4 sm:py-6 rounded-2xl border-4 focus:outline-none transition-colors ${
+                    isCorrectAnswered 
+                      ? 'border-green-400 bg-green-50 text-green-700' 
+                      : isError 
+                        ? 'border-red-400 bg-red-50 text-red-600' 
+                        : 'border-fuchsia-200 focus:border-fuchsia-500 bg-fuchsia-50/50 text-fuchsia-900'
+                  }`}
+                  autoFocus
+                />
+                
+                <AnimatePresence>
+                  {message && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      className={`text-xl sm:text-2xl font-bold text-center ${isError ? 'text-red-500' : 'text-green-500'}`}
+                    >
+                      {message}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {isCorrectAnswered ? (
+                  <button
+                    type="submit"
+                    autoFocus
+                    className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white text-2xl sm:text-3xl font-bold py-4 sm:py-5 rounded-2xl shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-95 transition-all flex justify-center items-center gap-3"
+                  >
+                    შემდეგ <ArrowRight className="w-6 h-6 sm:w-8 sm:h-8" />
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    className="w-full bg-gradient-to-r from-fuchsia-500 to-purple-500 text-white text-2xl sm:text-3xl font-bold py-4 sm:py-5 rounded-2xl shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-95 transition-all flex justify-center items-center gap-3"
+                  >
+                    შემოწმება
+                  </button>
+                )}
               </form>
             </motion.div>
           )}
         </AnimatePresence>
       </motion.div>
 
-      {/* სურვილების მოდალი */}
+      {/* მოდალი 40/40 ან 39/40 მიღწევისთვის */}
       <AnimatePresence>
         {showSuggestionModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-fuchsia-900/60 backdrop-blur-sm" />
-            <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0 }} className="relative bg-white rounded-[2rem] shadow-2xl p-8 w-full max-w-lg border-8 border-fuchsia-100">
-              <div className="text-center">
-                <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl shadow-lg mb-6 transform -rotate-6"><span className="text-4xl">🏆</span></div>
-                <h2 className="text-3xl sm:text-4xl font-black text-slate-800 mb-4">ბრავო, ელენე! 🎉</h2>
-                <p className="text-xl sm:text-2xl font-bold text-fuchsia-600 mb-8">ზედიზედ 40-დან {reachedCount} კითხვა სწორად გამოიცანი!</p>
-                <div className="bg-slate-50 p-6 rounded-2xl border-2 border-slate-100 mb-8">
-                  <label className="block text-slate-500 font-bold mb-3 text-lg">რა სურათი/გიფი გინდა რომ დაგიმატო შემდეგში?</label>
-                  <textarea autoFocus placeholder="მაგ: მფრინავი პონი..." value={suggestion} onChange={(e) => setSuggestion(e.target.value)} className="w-full h-24 bg-white rounded-xl border-2 border-slate-200 focus:border-fuchsia-400 p-4 text-xl font-medium resize-none" />
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-fuchsia-900/60 backdrop-blur-sm"
+            />
+            <motion.div 
+              initial={{ scale: 0.8, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.8, opacity: 0, y: 20 }}
+              className="relative bg-white rounded-[2rem] shadow-2xl p-8 sm:p-10 w-full max-w-lg border-8 border-fuchsia-100 overflow-hidden"
+            >
+              <div className="absolute -top-10 -right-10 w-32 h-32 bg-fuchsia-50 rounded-full blur-2xl" />
+              <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-purple-50 rounded-full blur-2xl" />
+              
+              <div className="relative text-center">
+                <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl shadow-lg mb-6 transform -rotate-6">
+                  <span className="text-4xl">🏆</span>
                 </div>
-                <button disabled={isSubmittingSuggestion || !suggestion.trim()} onClick={() => sendSuggestionToGoogle(suggestion)} className={`w-full py-4 rounded-xl text-2xl font-black shadow-lg transition-all ${isSubmittingSuggestion || !suggestion.trim() ? 'bg-slate-300 text-slate-100' : 'bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white hover:scale-[1.02]'}`}>
+                
+                <h2 className="text-3xl sm:text-4xl font-black text-slate-800 mb-4 leading-tight">
+                  ბრავო, ელენე! 🎉
+                </h2>
+                
+                <p className="text-xl sm:text-2xl font-bold text-fuchsia-600 mb-8 leading-relaxed">
+                  ზედიზედ 40-დან {reachedCount} კითხვა სწორად გამოიცანი!
+                </p>
+
+                <div className="bg-slate-50 p-6 rounded-2xl border-2 border-slate-100 mb-8">
+                  <label className="block text-slate-500 font-bold mb-3 text-lg">
+                    რა სურათი/გიფი გინდა რომ დაგიმატო შემდეგში?
+                  </label>
+                  <textarea
+                    autoFocus
+                    placeholder="მაგ: მფრინავი პონი..."
+                    value={suggestion}
+                    onChange={(e) => setSuggestion(e.target.value)}
+                    className="w-full h-24 bg-white rounded-xl border-2 border-slate-200 focus:border-fuchsia-400 focus:ring-0 p-4 text-xl font-medium resize-none transition-colors"
+                  />
+                </div>
+
+                <button
+                  disabled={isSubmittingSuggestion || !suggestion.trim()}
+                  onClick={() => sendSuggestionToGoogle(suggestion)}
+                  className={`w-full py-4 rounded-xl text-2xl font-black shadow-lg transition-all flex items-center justify-center gap-3 ${
+                    isSubmittingSuggestion || !suggestion.trim()
+                      ? 'bg-slate-300 text-slate-100 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white hover:scale-[1.02] active:scale-95'
+                  }`}
+                >
                   {isSubmittingSuggestion ? 'იგზავნება...' : 'გაგზავნა! 🚀'}
                 </button>
-                <button onClick={() => { setShowSuggestionModal(false); generateNextQuestion(); }} className="mt-4 text-slate-400 font-bold hover:text-slate-600">გამოტოვება</button>
+                
+                <button
+                  onClick={() => {
+                    setShowSuggestionModal(false);
+                    generateNextQuestion();
+                  }}
+                  className="mt-4 text-slate-400 font-bold hover:text-slate-600 transition-colors"
+                >
+                  გამოტოვება
+                </button>
               </div>
             </motion.div>
           </div>
